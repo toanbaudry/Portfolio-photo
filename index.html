@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Toan Baudry — Photographies</title>
+<style>
+  :root{
+    --paper:#f7f6f3;
+    --ink:#181716;
+    --line:#dedad2;
+    --mute:#8c887f;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:"Helvetica Neue",Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  header{
+    max-width:1100px;
+    margin:0 auto;
+    padding:64px 24px 32px;
+  }
+  h1{
+    font-family:Georgia,"Times New Roman",serif;
+    font-weight:400;
+    font-size:clamp(28px,4vw,42px);
+    letter-spacing:-0.01em;
+    margin:0 0 6px;
+  }
+  header p{
+    margin:0;
+    color:var(--mute);
+    font-size:15px;
+  }
+  nav{
+    max-width:1100px;
+    margin:0 auto;
+    padding:0 24px;
+    border-bottom:1px solid var(--line);
+    display:flex;
+    gap:28px;
+    overflow-x:auto;
+  }
+  nav button{
+    appearance:none;
+    background:none;
+    border:none;
+    font:inherit;
+    font-size:14px;
+    color:var(--mute);
+    padding:14px 0;
+    cursor:pointer;
+    position:relative;
+    white-space:nowrap;
+  }
+  nav button.active{
+    color:var(--ink);
+  }
+  nav button.active::after{
+    content:"";
+    position:absolute;
+    left:0;right:0;bottom:-1px;
+    height:2px;
+    background:var(--ink);
+  }
+  main{
+    max-width:1100px;
+    margin:0 auto;
+    padding:40px 24px 100px;
+  }
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+    gap:6px;
+  }
+  figure{
+    margin:0;
+    position:relative;
+    aspect-ratio:4/5;
+    overflow:hidden;
+    background:#e7e4dc;
+  }
+  figure img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+    transition:transform .5s ease;
+  }
+  figure:hover img{
+    transform:scale(1.03);
+  }
+  figcaption{
+    position:absolute;
+    left:8px;
+    bottom:8px;
+    font-size:11px;
+    font-family:"Courier New",monospace;
+    color:#fff;
+    background:rgba(0,0,0,.35);
+    padding:2px 6px;
+    opacity:0;
+    transition:opacity .2s ease;
+  }
+  figure:hover figcaption{ opacity:1; }
+  .empty{
+    color:var(--mute);
+    font-size:14px;
+    padding:40px 0;
+  }
+  footer{
+    max-width:1100px;
+    margin:0 auto;
+    padding:0 24px 60px;
+    color:var(--mute);
+    font-size:13px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Toan Baudry</h1>
+  <p>Photographies — argentique, mission, et le reste</p>
+</header>
+
+<nav id="tabs"></nav>
+
+<main>
+  <div class="grid" id="gallery"></div>
+</main>
+
+<footer>Mis à jour au fil du temps.</footer>
+
+<script>
+  // ---- Configuration des onglets et des photos ----
+  // Ajoute/retire des entrées ici. "src" pointe vers un fichier
+  // du dossier /photos/<categorie>/ ou vers une URL externe (ex. Cloudinary).
+  const categories = [
+    { id: "argentique", label: "Argentique" },
+    { id: "sbconsult",  label: "SBconsult" },
+    { id: "autres",     label: "Autres" },
+  ];
+
+  const photos = [
+    // { category: "argentique", src: "photos/argentique/001.jpg", caption: "001" },
+    // { category: "sbconsult",  src: "photos/sbconsult/convention.jpg", caption: "Convention" },
+  ];
+
+  // ---- Rendu ----
+  const nav = document.getElementById("tabs");
+  const gallery = document.getElementById("gallery");
+  let active = categories[0].id;
+
+  function renderNav(){
+    nav.innerHTML = "";
+    categories.forEach(cat => {
+      const btn = document.createElement("button");
+      btn.textContent = cat.label;
+      btn.className = cat.id === active ? "active" : "";
+      btn.onclick = () => { active = cat.id; renderNav(); renderGallery(); };
+      nav.appendChild(btn);
+    });
+  }
+
+  function renderGallery(){
+    const items = photos.filter(p => p.category === active);
+    gallery.innerHTML = "";
+    if(items.length === 0){
+      gallery.outerHTML = '<div class="empty" id="gallery">Aucune photo pour l’instant dans cette catégorie.</div>';
+      return;
+    }
+    items.forEach(p => {
+      const fig = document.createElement("figure");
+      const img = document.createElement("img");
+      img.src = p.src;
+      img.loading = "lazy";
+      img.alt = p.caption || "";
+      fig.appendChild(img);
+      if(p.caption){
+        const cap = document.createElement("figcaption");
+        cap.textContent = p.caption;
+        fig.appendChild(cap);
+      }
+      gallery.appendChild(fig);
+    });
+  }
+
+  renderNav();
+  renderGallery();
+</script>
+
+</body>
+</html>
